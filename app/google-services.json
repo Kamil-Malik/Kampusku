@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "779122086297",
+    "project_id": "kampusku-58910",
+    "storage_bucket": "kampusku-58910.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:779122086297:android:77f32a2148f91951928308",
+        "android_client_info": {
+          "package_name": "com.lelestacia.kampusku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "779122086297-te8pp1gmkift17uekm9kj4geo2s0qb11.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqLVe4Dxwthkukc_ChFE0wfRiJVIn2-r4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "779122086297-te8pp1gmkift17uekm9kj4geo2s0qb11.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
