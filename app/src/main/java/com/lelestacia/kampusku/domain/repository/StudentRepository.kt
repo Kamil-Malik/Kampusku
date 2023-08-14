@@ -6,4 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface StudentRepository {
     fun addStudent(student: StudentFirebaseModel): Flow<DataState<Boolean>>
+    fun getStudent(): Flow<DataState<List<StudentFirebaseModel>>>
+
+    fun deleteStudent(student: StudentFirebaseModel): Flow<DataState<Boolean>>
 }

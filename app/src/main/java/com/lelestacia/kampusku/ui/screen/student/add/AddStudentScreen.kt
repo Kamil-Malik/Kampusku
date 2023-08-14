@@ -1,4 +1,4 @@
-package com.lelestacia.kampusku.ui.screen.add
+package com.lelestacia.kampusku.ui.screen.student.add
 
 import android.content.res.Configuration
 import android.net.Uri
@@ -7,6 +7,9 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,9 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -32,14 +33,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +49,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,18 +59,26 @@ import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
+import com.lelestacia.kampusku.R
 import com.lelestacia.kampusku.ui.component.button.DeleteImageCircleButton
+import com.lelestacia.kampusku.ui.component.topbar.KampuskuTopBar
 import com.lelestacia.kampusku.ui.theme.KampuskuTheme
+import com.lelestacia.kampusku.util.UiText
 import com.parassidhu.simpledate.toDateStandard
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import java.util.Date
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun AddStudentScreen(
     state: AddStudentScreenState,
+    event: Channel<UiText>,
     onEvent: (AddStudentScreenEvent) -> Unit,
     onNavigateBack: () -> Unit
 ) {
+    val context = LocalContext.current
     val snackbarHostState by remember {
         mutableStateOf(SnackbarHostState())
     }
@@ -88,26 +100,24 @@ fun AddStudentScreen(
         }
     )
 
+    LaunchedEffect(key1 = Unit) {
+        event.receiveAsFlow().collectLatest { uiText ->
+            snackbarHostState.showSnackbar(
+                message = when (uiText) {
+                    is UiText.DynamicString -> uiText.value
+                    is UiText.StringResource -> context.getString(uiText.id)
+                },
+                duration = SnackbarDuration.Short
+            )
+        }
+    }
+
     Surface {
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = {
-                        Text(
-                            text = "Add Student",
-                            style = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold
-                            )
-                        )
-                    },
-                    navigationIcon = {
-                        IconButton(onClick = { onNavigateBack() }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = null
-                            )
-                        }
-                    }
+                KampuskuTopBar(
+                    title = "Add Student",
+                    onNavigateBack = onNavigateBack
                 )
             },
             snackbarHost = {
@@ -117,7 +127,7 @@ fun AddStudentScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = {
-
+                    onEvent(AddStudentScreenEvent.OnSaveButtonPressed)
                 }) {
                     Icon(
                         imageVector = Icons.Default.Save,
@@ -127,6 +137,7 @@ fun AddStudentScreen(
             }
         ) { paddingValues ->
             Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
@@ -134,47 +145,58 @@ fun AddStudentScreen(
                         horizontal = 16.dp
                     )
             ) {
-                Crossfade(
-                    targetState = state.photoUrl.toString().isEmpty(),
-                    label = "Photo"
-                ) { isPhotoUrlEmpty ->
-                    if (isPhotoUrlEmpty) {
-                        IconButton(onClick = {
-                            if (galleryPermission.status.isGranted) {
-                                galleryContract.launch("image/*")
-                            } else {
-                                galleryPermission.launchPermissionRequest()
-                            }
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Image,
-                                contentDescription = null
-                            )
-                        }
-                    } else {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(8.dp)
-                        ) {
-                            Box(
-                                contentAlignment = Alignment.BottomEnd
-                            ) {
-                                AsyncImage(
-                                    model = state.photoUrl,
-                                    contentDescription = null,
-                                    contentScale = ContentScale.Crop,
-                                    alignment = Alignment.Center,
-                                    modifier = Modifier
-                                        .size(175.dp)
-                                        .clip(CircleShape)
-                                )
-                                DeleteImageCircleButton(
-                                    onClicked = {
-                                        onEvent(AddStudentScreenEvent.OnStudentPhotoUrlChanged(Uri.EMPTY))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateContentSize()
+                ) {
+                    Crossfade(
+                        targetState = state.photoUrl.toString().isEmpty(),
+                        label = "Photo"
+                    ) { isPhotoUrlEmpty ->
+                        if (isPhotoUrlEmpty) {
+                            Image(
+                                painter = painterResource(id = R.drawable.add_image),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .size(50.dp)
+                                    .clickable {
+                                        if (galleryPermission.status.isGranted) {
+                                            galleryContract.launch("image/*")
+                                        } else {
+                                            galleryPermission.launchPermissionRequest()
+                                        }
                                     }
-                                )
+                            )
+                        } else {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(8.dp)
+                            ) {
+                                Box(
+                                    contentAlignment = Alignment.BottomEnd
+                                ) {
+                                    AsyncImage(
+                                        model = state.photoUrl,
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        alignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .size(175.dp)
+                                            .clip(CircleShape)
+                                    )
+                                    DeleteImageCircleButton(
+                                        onClicked = {
+                                            onEvent(
+                                                AddStudentScreenEvent.OnStudentPhotoUrlChanged(
+                                                    Uri.EMPTY
+                                                )
+                                            )
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -263,7 +285,6 @@ fun AddStudentScreen(
                         ),
                         modifier = Modifier.padding(
                             start = 8.dp,
-                            top = 4.dp
                         )
                     )
                     Row(
@@ -333,6 +354,7 @@ fun PreviewDashboardScreen() {
     KampuskuTheme {
         AddStudentScreen(
             state = AddStudentScreenState(),
+            event = Channel(),
             onEvent = {},
             onNavigateBack = {}
         )

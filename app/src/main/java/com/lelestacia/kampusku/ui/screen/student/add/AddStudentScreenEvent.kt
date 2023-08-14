@@ -1,4 +1,4 @@
-package com.lelestacia.kampusku.ui.screen.add
+package com.lelestacia.kampusku.ui.screen.student.add
 
 import android.net.Uri
 
@@ -12,4 +12,5 @@ sealed class AddStudentScreenEvent {
     data class OnStudentPhotoUrlChanged(val newStudentPhotoUrl: Uri) : AddStudentScreenEvent()
     data class OnGenderChanged(val newGender: Boolean) : AddStudentScreenEvent()
     object OnDatePickerToggled: AddStudentScreenEvent()
+    object OnSaveButtonPressed: AddStudentScreenEvent()
 }

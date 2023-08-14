@@ -1,4 +1,4 @@
-package com.lelestacia.kampusku.ui.screen.login
+package com.lelestacia.kampusku.ui.screen.signin
 
 data class SignInScreenState(
     val email: String = "",

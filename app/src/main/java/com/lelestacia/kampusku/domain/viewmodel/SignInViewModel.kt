@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
 import com.lelestacia.kampusku.domain.repository.AuthRepository
-import com.lelestacia.kampusku.ui.screen.login.SignInScreenEvent
-import com.lelestacia.kampusku.ui.screen.login.SignInScreenState
+import com.lelestacia.kampusku.ui.screen.signin.SignInScreenEvent
+import com.lelestacia.kampusku.ui.screen.signin.SignInScreenState
 import com.lelestacia.kampusku.util.DataState
+import com.lelestacia.kampusku.util.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,7 @@ class SignInViewModel @Inject constructor(
         _signInScreenResult.asStateFlow()
 
     val userEvent: Channel<FirebaseUser?> = Channel()
-    val event: Channel<String> = Channel()
+    val event: Channel<UiText> = Channel()
 
     fun onEvent(event: SignInScreenEvent) {
         when (event) {

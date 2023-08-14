@@ -42,7 +42,7 @@ fun SplashScreen(
     LaunchedEffect(key1 = Unit) {
         scope.launch {
             delay(5000)
-            onNavigate(Screen.Login.route)
+            onNavigate(Screen.SignIn.route)
         }
     }
 }

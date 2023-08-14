@@ -1,4 +1,4 @@
-package com.lelestacia.kampusku.ui.screen.add
+package com.lelestacia.kampusku.ui.screen.student.add
 
 import android.net.Uri
 

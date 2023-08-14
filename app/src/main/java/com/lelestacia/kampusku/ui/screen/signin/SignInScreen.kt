@@ -1,4 +1,4 @@
-package com.lelestacia.kampusku.ui.screen.login
+package com.lelestacia.kampusku.ui.screen.signin
 
 import android.content.res.Configuration
 import androidx.compose.animation.Crossfade
@@ -12,8 +12,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.LockOpen
+import androidx.compose.material.icons.filled.Password
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -33,8 +35,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.lelestacia.kampusku.R
 import com.lelestacia.kampusku.ui.theme.KampuskuTheme
+import com.lelestacia.kampusku.util.UiText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -52,15 +56,16 @@ import kotlinx.coroutines.flow.receiveAsFlow
 fun SignInScreen(
     state: SignInScreenState,
     onEvent: (SignInScreenEvent) -> Unit,
-    eventMessage: Channel<String>
+    eventMessage: Channel<UiText>
 ) {
+    val context = LocalContext.current
     val snackbarHostState by remember {
         mutableStateOf(SnackbarHostState())
     }
     LaunchedEffect(Unit) {
         eventMessage.receiveAsFlow().collectLatest { message ->
             snackbarHostState.showSnackbar(
-                message = message,
+                message = message.asString(context),
                 duration = SnackbarDuration.Short
             )
         }
@@ -100,7 +105,13 @@ fun SignInScreen(
                         onEvent(SignInScreenEvent.OnEmailChanged(newEmail))
                     },
                     label = {
-                        Text(text = "Email")
+                        Text(text = stringResource(id = R.string.label_email))
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Email,
+                            contentDescription = null
+                        )
                     },
                     placeholder = {
                         Text(text = "example@mail.com")
@@ -119,7 +130,13 @@ fun SignInScreen(
                         onEvent(SignInScreenEvent.OnPasswordChanged(newPassword))
                     },
                     label = {
-                        Text(text = "Password")
+                        Text(text = stringResource(id = R.string.label_password))
+                    },
+                    leadingIcon = {
+                        Icon(
+                            imageVector = Icons.Default.Password,
+                            contentDescription = null
+                        )
                     },
                     placeholder = {
                         Text(text = "Your Password Here")
@@ -150,9 +167,10 @@ fun SignInScreen(
                     readOnly = state.isNowLoading,
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 Crossfade(
                     targetState = state.isNowLoading,
-                    label = "Button transition"
+                    label = stringResource(id = R.string.label_transition)
                 ) { nowLoading ->
                     if (nowLoading) {
                         Box(
@@ -171,8 +189,7 @@ fun SignInScreen(
                                     horizontal = 16.dp
                                 )
                         ) {
-                            Text(text = "SignIn")
-                            LocalSoftwareKeyboardController.current?.hide()
+                            Text(text = stringResource(id = R.string.button_sign_in))
                         }
                     }
                 }

@@ -1,8 +1,14 @@
 package com.lelestacia.kampusku.data.model
 
+import android.os.Parcelable
 import com.google.firebase.firestore.PropertyName
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class StudentFirebaseModel(
+
+    @PropertyName("student_docs_id")
+    var id: String = "",
 
     @PropertyName("student_id")
     var identificationNumber: String = "",
@@ -21,4 +27,4 @@ data class StudentFirebaseModel(
 
     @PropertyName("student_photo")
     var photoUrl: String = ""
-)
+): Parcelable

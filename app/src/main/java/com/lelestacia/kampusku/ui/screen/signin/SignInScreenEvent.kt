@@ -1,4 +1,4 @@
-package com.lelestacia.kampusku.ui.screen.login
+package com.lelestacia.kampusku.ui.screen.signin
 
 sealed class SignInScreenEvent {
     data class OnEmailChanged(val newEmail: String) : SignInScreenEvent()

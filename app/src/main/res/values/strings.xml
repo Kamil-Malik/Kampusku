@@ -1,3 +1,32 @@
 <resources>
     <string name="app_name">Kampusku</string>
+
+    <string name="student_added">Student Successfully Added</string>
+    <string name="no_internet">Please check your internet connection and try again</string>
+
+    <!--Dialog Menu-->
+    <string name="dialog_option">Options</string>
+    <string name="dialog_view_data">View Data</string>
+    <string name="dialog_edit_data">Edit Data</string>
+    <string name="dialog_delete_data">Delete Data</string>
+
+    <!--Message Event-->
+    <string name="message_student_added">Student successfully added</string>
+    <string name="message_student_updated">Student successfully updated</string>
+    <string name="message_student_deleted">Student successfully deleted</string>
+
+    <!--Top Bar Title-->
+    <string name="topbar_title_detail_student">Detail Student</string>
+
+    <!--Label-->
+    <string name="label_identification_number">Identification Number</string>
+    <string name="label_name">Name</string>
+    <string name="label_email">Email</string>
+    <string name="label_password">Password</string>
+    <string name="label_address">Address</string>
+    <string name="label_birth_date">Birth Date</string>
+    <string name="label_transition">Transition Animation</string>
+
+    <!--Button-->
+    <string name="button_sign_in">Sign In</string>
 </resources>
