@@ -8,9 +8,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.lelestacia.kampusku.R
 import com.lelestacia.kampusku.ui.component.topbar.KampuskuTopBar
 import com.lelestacia.kampusku.ui.theme.KampuskuTheme
 
@@ -23,13 +25,13 @@ fun InformationScreen(
         Scaffold(
             topBar = {
                 KampuskuTopBar(
-                    title = "Information",
+                    title = stringResource(R.string.topbar_title_information),
                     onNavigateBack = onNavigateBack
                 )
             }
         ) { paddingValues ->
             Text(
-                text = "Aplikasi Kampusku merupakan aplikasi yang akan digunakan untuk pendataan mahasiswa. User nantinya bisa menambahkan, update, dan hapus data mahasiswa.",
+                text = stringResource(R.string.application_information),
                 textAlign = TextAlign.Justify,
                 modifier = Modifier
                     .padding(paddingValues)

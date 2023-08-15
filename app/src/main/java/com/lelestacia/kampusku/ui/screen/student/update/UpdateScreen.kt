@@ -1,6 +1,6 @@
-package com.lelestacia.kampusku.ui.screen.student.add
+package com.lelestacia.kampusku.ui.screen.student.update
 
-import android.content.res.Configuration
+import android.Manifest
 import android.net.Uri
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -56,7 +56,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -66,7 +65,6 @@ import com.lelestacia.kampusku.R
 import com.lelestacia.kampusku.ui.component.button.DeleteImageCircleButton
 import com.lelestacia.kampusku.ui.component.topbar.KampuskuTopBar
 import com.lelestacia.kampusku.ui.screen.util.LoadingScreen
-import com.lelestacia.kampusku.ui.theme.KampuskuTheme
 import com.lelestacia.kampusku.util.UiText
 import com.parassidhu.simpledate.toDateStandard
 import kotlinx.coroutines.channels.Channel
@@ -74,13 +72,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.receiveAsFlow
 import java.util.Date
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
+@OptIn(ExperimentalPermissionsApi::class, ExperimentalMaterial3Api::class)
 @Composable
-fun AddStudentScreen(
-    state: AddStudentScreenState,
-    event: Channel<UiText>,
-    onEvent: (AddStudentScreenEvent) -> Unit,
-    onNavigateBack: () -> Unit
+fun UpdateStudentScreen(
+    state: UpdateStudentScreenState,
+    onEvent: (UpdateStudentScreenEvent) -> Unit,
+    onNavigateBack: () -> Unit,
+    eventChannel: Channel<UiText>
 ) {
     val context = LocalContext.current
     val snackbarHostState by remember {
@@ -91,21 +89,21 @@ fun AddStudentScreen(
         contract = ActivityResultContracts.GetContent(),
         onResult = { newImageUri ->
             if (newImageUri != null) {
-                onEvent(AddStudentScreenEvent.OnStudentPhotoUrlChanged(newImageUri))
+                onEvent(UpdateStudentScreenEvent.OnStudentPhotoUrlChanged(newImageUri))
             }
         })
 
     val galleryPermission = rememberPermissionState(
         permission =
         if (Build.VERSION.SDK_INT > 32) {
-            android.Manifest.permission.READ_MEDIA_IMAGES
+            Manifest.permission.READ_MEDIA_IMAGES
         } else {
-            android.Manifest.permission.READ_EXTERNAL_STORAGE
+            Manifest.permission.READ_EXTERNAL_STORAGE
         }
     )
 
     LaunchedEffect(key1 = Unit) {
-        event.receiveAsFlow().collectLatest { uiText ->
+        eventChannel.receiveAsFlow().collectLatest { uiText ->
             snackbarHostState.showSnackbar(
                 message = when (uiText) {
                     is UiText.DynamicString -> uiText.value
@@ -131,7 +129,7 @@ fun AddStudentScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(onClick = {
-                    onEvent(AddStudentScreenEvent.OnSaveButtonPressed)
+                    onEvent(UpdateStudentScreenEvent.OnSaveButtonPressed)
                 }) {
                     Icon(
                         imageVector = Icons.Default.Save,
@@ -159,7 +157,7 @@ fun AddStudentScreen(
                             .animateContentSize()
                     ) {
                         Crossfade(
-                            targetState = state.photoUrl.toString().isEmpty(),
+                            targetState = state.photoUrl.toString().isBlank(),
                             label = "Photo"
                         ) { isPhotoUrlEmpty ->
                             if (isPhotoUrlEmpty) {
@@ -198,7 +196,7 @@ fun AddStudentScreen(
                                         DeleteImageCircleButton(
                                             onClicked = {
                                                 onEvent(
-                                                    AddStudentScreenEvent.OnStudentPhotoUrlChanged(
+                                                    UpdateStudentScreenEvent.OnStudentPhotoUrlChanged(
                                                         Uri.EMPTY
                                                     )
                                                 )
@@ -213,7 +211,7 @@ fun AddStudentScreen(
                         value = state.identificationNumber,
                         onValueChange = { newIdentificationNumber ->
                             onEvent(
-                                AddStudentScreenEvent.OnIdentificationNumberChanged(
+                                UpdateStudentScreenEvent.OnIdentificationNumberChanged(
                                     newIdentificationNumber
                                 )
                             )
@@ -232,7 +230,7 @@ fun AddStudentScreen(
                     OutlinedTextField(
                         value = state.name,
                         onValueChange = { newStudentName ->
-                            onEvent(AddStudentScreenEvent.OnStudentNameChanged(newStudentName))
+                            onEvent(UpdateStudentScreenEvent.OnStudentNameChanged(newStudentName))
                         },
                         label = {
                             Text(text = stringResource(id = R.string.label_name))
@@ -262,14 +260,14 @@ fun AddStudentScreen(
                             },
                             modifier = Modifier.weight(1f)
                         )
-                        IconButton(onClick = { onEvent(AddStudentScreenEvent.OnDatePickerToggled) }) {
+                        IconButton(onClick = { onEvent(UpdateStudentScreenEvent.OnDatePickerToggled) }) {
                             Icon(imageVector = Icons.Default.DateRange, contentDescription = null)
                         }
                     }
                     OutlinedTextField(
                         value = state.address,
                         onValueChange = { newAddress ->
-                            onEvent(AddStudentScreenEvent.OnStudentAddressChanged(newAddress))
+                            onEvent(UpdateStudentScreenEvent.OnStudentAddressChanged(newAddress))
                         },
                         label = {
                             Text(text = stringResource(id = R.string.label_address))
@@ -304,7 +302,13 @@ fun AddStudentScreen(
                             ) {
                                 RadioButton(
                                     selected = !state.isWoman,
-                                    onClick = { onEvent(AddStudentScreenEvent.OnGenderChanged(false)) })
+                                    onClick = {
+                                        onEvent(
+                                            UpdateStudentScreenEvent.OnGenderChanged(
+                                                false
+                                            )
+                                        )
+                                    })
                                 Text(text = stringResource(id = R.string.gender_man))
                             }
                             Row(
@@ -313,7 +317,13 @@ fun AddStudentScreen(
                             ) {
                                 RadioButton(
                                     selected = state.isWoman,
-                                    onClick = { onEvent(AddStudentScreenEvent.OnGenderChanged(true)) })
+                                    onClick = {
+                                        onEvent(
+                                            UpdateStudentScreenEvent.OnGenderChanged(
+                                                true
+                                            )
+                                        )
+                                    })
                                 Text(text = stringResource(id = R.string.gender_woman))
                             }
                         }
@@ -323,17 +333,17 @@ fun AddStudentScreen(
                         AnimatedVisibility(visible = state.isDatePickerOpened) {
                             DatePickerDialog(
                                 onDismissRequest = {
-                                    onEvent(AddStudentScreenEvent.OnDatePickerToggled)
+                                    onEvent(UpdateStudentScreenEvent.OnDatePickerToggled)
                                 },
                                 confirmButton = {
                                     TextButton(onClick = {
                                         datePickerState.selectedDateMillis?.let {
                                             onEvent(
-                                                AddStudentScreenEvent.OnStudentBirthDateChanged(
+                                                UpdateStudentScreenEvent.OnStudentBirthDateChanged(
                                                     it
                                                 )
                                             )
-                                            onEvent(AddStudentScreenEvent.OnDatePickerToggled)
+                                            onEvent(UpdateStudentScreenEvent.OnDatePickerToggled)
                                         }
                                     }) {
                                         Text(text = stringResource(id = R.string.button_confirm_date))
@@ -355,28 +365,5 @@ fun AddStudentScreen(
                 }
             }
         }
-    }
-}
-
-@Preview(
-    name = "Preview Add Student Screen Day Mode",
-    device = "id:pixel_7",
-    showBackground = true
-)
-@Preview(
-    name = "Preview Add Student Screen Dark Mode",
-    device = "id:pixel_7",
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES
-)
-@Composable
-fun PreviewDashboardScreen() {
-    KampuskuTheme {
-        AddStudentScreen(
-            state = AddStudentScreenState(),
-            event = Channel(),
-            onEvent = {},
-            onNavigateBack = {}
-        )
     }
 }

@@ -40,14 +40,27 @@ class StudentRepositoryImpl @Inject constructor(
             val storageReference: StorageReference = imageService
                 .reference
                 .child("$STUDENT_FOLDER/${student.name} - ${student.identificationNumber}.jpg")
-            storageReference.putFile(Uri.parse(student.photoUrl)).await()
-            val uri: Uri = storageReference.downloadUrl.await()
+
+            if (student.photoUrl.isNotBlank()) {
+                storageReference.putFile(Uri.parse(student.photoUrl)).await()
+            }
+
+            val uri: Uri = if (student.photoUrl.isNotBlank()) {
+                storageReference.downloadUrl.await()
+            } else {
+                Uri.EMPTY
+            }
+
             val newID: String = docsService.collection(STUDENT_FOLDER).document().id
             val newStudent: StudentFirebaseModel = student.copy(
                 id = newID,
                 photoUrl = uri.toString()
             )
-            docsService.collection(STUDENT_FOLDER).document(newID).set(newStudent).await()
+            docsService
+                .collection(STUDENT_FOLDER)
+                .document(newID)
+                .set(newStudent)
+                .await()
             emit(DataState.Success(true))
         }.onStart {
             emit(DataState.Loading)
@@ -57,7 +70,7 @@ class StudentRepositoryImpl @Inject constructor(
                     DataState.Error(
                         errorMessage = UiText.StringResource(
                             R.string.no_internet,
-                            listOf()
+                            emptyList()
                         )
                     )
                 )
@@ -79,7 +92,9 @@ class StudentRepositoryImpl @Inject constructor(
                         trySend(DataState.Success((data ?: emptyList()).toList()))
                     }
                 }
-            docsService.collection(STUDENT_FOLDER).addSnapshotListener(listener)
+            docsService
+                .collection(STUDENT_FOLDER)
+                .addSnapshotListener(listener)
             awaitClose()
         }.onStart {
             emit(DataState.Loading)
@@ -90,6 +105,55 @@ class StudentRepositoryImpl @Inject constructor(
                         errorMessage = UiText.StringResource(
                             R.string.no_internet,
                             listOf()
+                        )
+                    )
+                )
+            } else {
+                emit(DataState.Error(errorMessage = UiText.DynamicString(t.message.orEmpty())))
+            }
+        }.flowOn(ioDispatcher)
+    }
+
+    override fun updateStudent(
+        oldStudentData: StudentFirebaseModel,
+        newStudentData: StudentFirebaseModel
+    ): Flow<DataState<Boolean>> {
+        return flow<DataState<Boolean>> {
+
+            val newStorageReference: StorageReference = imageService
+                .reference
+                .child("$STUDENT_FOLDER/${newStudentData.name} - ${newStudentData.identificationNumber}.jpg")
+
+            if (newStudentData.photoUrl.isNotBlank()) {
+                newStorageReference.putFile(Uri.parse(newStudentData.photoUrl)).await()
+            }
+
+            //  Get new reference url
+            val uri: Uri = if (newStudentData.photoUrl.isNotBlank()) {
+                newStorageReference.downloadUrl.await()
+            } else {
+                Uri.EMPTY
+            }
+
+            //  Replace with NewData
+            docsService
+                .collection(STUDENT_FOLDER)
+                .document(oldStudentData.id)
+                .set(
+                    newStudentData.copy(
+                        photoUrl = uri.toString()
+                    )
+                ).await()
+            emit(DataState.Success(true))
+        }.onStart {
+            emit(DataState.Loading)
+        }.catch { t ->
+            if (t is UnknownHostException || t is IOException) {
+                emit(
+                    DataState.Error(
+                        errorMessage = UiText.StringResource(
+                            R.string.no_internet,
+                            emptyList()
                         )
                     )
                 )
@@ -125,7 +189,7 @@ class StudentRepositoryImpl @Inject constructor(
                     DataState.Error(
                         errorMessage = UiText.StringResource(
                             R.string.no_internet,
-                            listOf()
+                            emptyList()
                         )
                     )
                 )

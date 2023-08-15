@@ -1,7 +1,9 @@
 package com.lelestacia.kampusku.ui.screen.student.detail
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -41,6 +43,7 @@ fun DetailStudentScreen(
         }
     ) { paddingValues ->
         Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
@@ -54,19 +57,14 @@ fun DetailStudentScreen(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Box(
-                    contentAlignment = Alignment.BottomEnd
-                ) {
-                    AsyncImage(
-                        model = student.photoUrl,
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(125.dp)
-                            .clip(CircleShape)
-                    )
-                    GenderIcon(isWoman = student.isWoman)
-                }
+                AsyncImage(
+                    model = student.photoUrl,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .size(125.dp)
+                        .clip(CircleShape)
+                )
             }
 
             OutlinedTextField(
@@ -79,15 +77,21 @@ fun DetailStudentScreen(
                 modifier = Modifier.fillMaxWidth()
             )
 
-            OutlinedTextField(
-                value = student.name,
-                onValueChange = {},
-                readOnly = true,
-                label = {
-                    Text(text = stringResource(id = R.string.label_name))
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = student.name,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = {
+                        Text(text = stringResource(id = R.string.label_name))
+                    },
+                    modifier = Modifier.weight(1f)
+                )
+                GenderIcon(isWoman = student.isWoman)
+            }
 
             OutlinedTextField(
                 value = Date(student.studentBirthDate).toDateStandard(),

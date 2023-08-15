@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Kampusku</string>
 
+    <!--Message-->
     <string name="student_added">Student Successfully Added</string>
+    <string name="student_updated">Student Successfully Updated</string>
     <string name="no_internet">Please check your internet connection and try again</string>
 
     <!--Dialog Menu-->
@@ -16,7 +18,15 @@
     <string name="message_student_deleted">Student successfully deleted</string>
 
     <!--Top Bar Title-->
+    <string name="topbar_title_dashboard">Dashboard</string>
+    <string name="topbar_title_add_student">Add Student</string>
+    <string name="topbar_title_list_student">Students Data</string>
     <string name="topbar_title_detail_student">Detail Student</string>
+    <string name="topbar_title_information">Information</string>
+
+    <!--Gender-->
+    <string name="gender_man">Man</string>
+    <string name="gender_woman">Woman</string>
 
     <!--Label-->
     <string name="label_identification_number">Identification Number</string>
@@ -25,8 +35,16 @@
     <string name="label_password">Password</string>
     <string name="label_address">Address</string>
     <string name="label_birth_date">Birth Date</string>
+    <string name="label_gender">Gender</string>
     <string name="label_transition">Transition Animation</string>
 
     <!--Button-->
     <string name="button_sign_in">Sign In</string>
+    <string name="button_show_data">Show Data</string>
+    <string name="button_input_data">Input Data</string>
+    <string name="button_information">Information</string>
+    <string name="button_confirm_date">Confirm Date</string>
+
+    <!--Content or Else-->
+    <string name="application_information">Aplikasi Kampusku merupakan aplikasi yang akan digunakan untuk pendataan mahasiswa. User nantinya bisa menambahkan, update, dan hapus data mahasiswa.</string>
 </resources>

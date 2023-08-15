@@ -15,5 +15,13 @@ sealed class Screen(val route: String) {
     }
     object AddStudent : Screen("add")
     object ListStudent : Screen("list")
+    object UpdateStudent: Screen("update/{student}") {
+        fun createRoute(student: String) : String {
+            return this.route.replace(
+                oldValue = "{student}",
+                newValue = student
+            )
+        }
+    }
 }
 

@@ -90,12 +90,12 @@ data class AddStudentViewModel @Inject constructor(
             }
 
             AddStudentScreenEvent.OnSaveButtonPressed -> {
-                uploadImage()
+                addStudent()
             }
         }
     }
 
-    private fun uploadImage() = viewModelScope.launch {
+    private fun addStudent() = viewModelScope.launch {
         val student = StudentFirebaseModel(
             identificationNumber = _addStudentScreenState.value.identificationNumber,
             name = _addStudentScreenState.value.name,

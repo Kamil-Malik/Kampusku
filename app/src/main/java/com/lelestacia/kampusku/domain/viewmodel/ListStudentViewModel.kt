@@ -1,7 +1,9 @@
 package com.lelestacia.kampusku.domain.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.lelestacia.kampusku.R
 import com.lelestacia.kampusku.data.model.StudentFirebaseModel
 import com.lelestacia.kampusku.domain.repository.StudentRepository
@@ -62,6 +64,10 @@ class ListStudentViewModel @Inject constructor(
         }
     }
 
+    fun encodeJson(): String {
+        return Uri.encode(Gson().toJson(listStudentScreenState.value.selectedStudent))
+    }
+
     private fun deleteStudent() = viewModelScope.launch {
         listStudentScreenState.value.selectedStudent?.let { student ->
             repository.deleteStudent(student).collectLatest { result ->
@@ -75,8 +81,14 @@ class ListStudentViewModel @Inject constructor(
                 when (result) {
                     is DataState.Error -> eventChannel.send(result.errorMessage)
                     is DataState.Success -> {
-                        eventChannel.send(UiText.StringResource(R.string.message_student_deleted, emptyList()))
+                        eventChannel.send(
+                            UiText.StringResource(
+                                R.string.message_student_deleted,
+                                emptyList()
+                            )
+                        )
                     }
+
                     else -> Unit
                 }
             }

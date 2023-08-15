@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -42,7 +43,7 @@ fun DashboardScreen(
             topBar = {
                 TopAppBar(title = {
                     Text(
-                        text = "Dashboard",
+                        text = stringResource(id = R.string.topbar_title_dashboard),
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold
                         )
@@ -79,7 +80,7 @@ fun DashboardScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(imageVector = Icons.Default.List, contentDescription = null)
-                            Text(text = "Show Data")
+                            Text(text = stringResource(id = R.string.button_show_data))
                         }
                     }
                     Button(
@@ -92,7 +93,7 @@ fun DashboardScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(imageVector = Icons.Default.Add, contentDescription = null)
-                            Text(text = "Input Data")
+                            Text(text = stringResource(id = R.string.button_input_data))
                         }
                     }
                     Button(
@@ -105,7 +106,7 @@ fun DashboardScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(imageVector = Icons.Default.Info, contentDescription = null)
-                            Text(text = "Information")
+                            Text(text = stringResource(id = R.string.button_information))
                         }
                     }
                 }
